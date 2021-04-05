@@ -1,0 +1,7 @@
+fastapi~=0.63.0
+uvicorn~=0.13.4
+starlette~=0.13.6
+jinja2
+pydantic~=1.8.1
+httpx
+chess~=1.4.0
