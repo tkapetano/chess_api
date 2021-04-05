@@ -14,3 +14,4 @@ class Turn(BaseModel):
     current_player: str
     current_move: str
     last_move: str
+    game_number: int = 0
