@@ -20,10 +20,21 @@ class Game(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
-    description = Column(String, index=True)
-    num_turns = Column(Integer)
     owner_id = Column(Integer, ForeignKey("users.id"))
 
     owner = relationship("User", back_populates="games")
+    turns = relationship("Turn", back_populate="game")
 
-    ## TODO: link to turns
+
+class Turn(Base):
+    __tablename__ = "turns"
+
+    id = Column(Integer, primary_key=True, index=True)
+    fen = Column(String)
+    current_player = Column(String)
+    current_move = Column(String)
+    last_move = Column(String)
+    game_id = Column(Integer, ForeignKey("games.id"))
+
+    game = relationship("Game", back_populates="turns")
+

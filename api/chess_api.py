@@ -1,7 +1,7 @@
 import fastapi
 import chess
 
-from models.move import Turn, Move
+from models.move import  Move
 
 router = fastapi.APIRouter()
 

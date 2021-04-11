@@ -2,10 +2,28 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 
+class TurnBase(BaseModel):
+    fen: str
+    current_player: str
+    current_move: str
+    last_move: Optional[str] = None
+
+
+class TurnCreate(TurnBase):
+    pass
+
+
+class Turn(TurnBase):
+    id: int
+    game_id: int
+
+    class Config:
+        orm_mode = True
+
+
 class GameBase(BaseModel):
     title: str
     description: Optional[str] = None
-    num_turns: int = 0
 
 
 class GameCreate(GameBase):
@@ -15,6 +33,7 @@ class GameCreate(GameBase):
 class Game(GameBase):
     id: int
     owner_id: int
+    turns: List[Turn] = []
 
     class Config:
         orm_mode = True
