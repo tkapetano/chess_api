@@ -3,11 +3,12 @@ from typing import List
 from fastapi import Depends, HTTPException, APIRouter
 from sqlalchemy.orm import Session
 
-from . import crud, models, schemas
-from .database import SessionLocal, engine
+from sql_app import crud, models, schemas
+from sql_app.database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
 router = APIRouter()
+
 
 # Dependency
 def get_db():
@@ -40,14 +41,14 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
     return db_user
 
 
-@router.post("/users/{user_id}/items/", response_model=schemas.Item)
-def create_item_for_user(
-    user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)
+@router.post("/users/{user_id}/games/", response_model=schemas.Game)
+def create_new_game_for_user(
+    user_id: int, game: schemas.GameCreate, db: Session = Depends(get_db)
 ):
-    return crud.create_user_item(db=db, item=item, user_id=user_id)
+    return crud.create_user_game(db=db, item=game, user_id=user_id)
 
 
-@router.get("/items/", response_model=List[schemas.Item])
+@router.get("/games/", response_model=List[schemas.Game])
 def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    items = crud.get_items(db, skip=skip, limit=limit)
-    return items
+    games = crud.get_games(db, skip=skip, limit=limit)
+    return games

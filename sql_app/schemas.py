@@ -2,16 +2,17 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 
-class ItemBase(BaseModel):
+class GameBase(BaseModel):
     title: str
     description: Optional[str] = None
+    num_turns: int = 0
 
 
-class ItemCreate(ItemBase):
+class GameCreate(GameBase):
     pass
 
 
-class Item(ItemBase):
+class Game(GameBase):
     id: int
     owner_id: int
 
@@ -30,7 +31,7 @@ class UserCreate(UserBase):
 class User(UserBase):
     id: int
     is_active: bool
-    items: List[Item] = []
+    games: List[Game] = []
 
     class Config:
         orm_mode = True
