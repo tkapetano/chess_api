@@ -5,16 +5,15 @@ from sqlalchemy.orm import sessionmaker
 from sql_app.database import Base
 from sql_app.sql_access import get_db
 from main import api
+from typing import Generator
+import pytest
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
+SQLALCHEMY_DATABASE_URL = "sqlite:///tests/test.db"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
 )
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-
-Base.metadata.create_all(bind=engine)
 
 
 def override_get_db():
@@ -27,7 +26,19 @@ def override_get_db():
 
 api.dependency_overrides[get_db] = override_get_db
 
-client = TestClient(api)
+
+@pytest.fixture(scope="session")
+def db() -> Generator:
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+    yield TestingSessionLocal()
+
+
+@pytest.fixture(scope="session")
+def client() -> Generator:
+    with TestClient(api) as c:
+        yield c
 
 
 def test_create_and_read_user():
