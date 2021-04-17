@@ -23,7 +23,7 @@ class Game(Base):
     owner_id = Column(Integer, ForeignKey("users.id"))
 
     owner = relationship("User", back_populates="games")
-    turns = relationship("Turn", back_populate="game")
+    turns = relationship("Turn", back_populates="game")
 
 
 class Turn(Base):
