@@ -1,7 +1,6 @@
-from typing import Optional, AsyncIterable
+from typing import AsyncIterable
 
 import pytest
-from fastapi import Depends
 from starlette.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine as Database
@@ -16,6 +15,7 @@ URL = "sqlite:///tests/test.db"
 ENGINE = create_engine(
     URL, connect_args={"check_same_thread": False}
 )
+
 
 def get_test_db_conn() -> Database:
     assert ENGINE is not None
@@ -33,11 +33,11 @@ def get_test_db() -> AsyncIterable[Session]:
 @pytest.fixture(scope="session", autouse=True)
 def create_test_database():
     """
-  Create a clean database on every test case.
+    Create a clean database on every test case.
 
-  We use the `sqlalchemy_utils` package here for a few helpers in consistently
-  creating and dropping the database.
-  """
+    We use the `sqlalchemy_utils` package here for a few helpers in consistently
+    creating and dropping the database.
+    """
     if database_exists(URL):
         drop_database(URL)
     create_database(URL)  # Create the test database.
@@ -50,9 +50,7 @@ def create_test_database():
 @pytest.yield_fixture
 def test_db_session():
     """Returns an sqlalchemy session, and after the test tears down everything properly."""
-
     session = Session(bind=ENGINE)
-
     yield session
     # Drop all data after each test
     for tbl in reversed(Base.metadata.sorted_tables):
@@ -63,10 +61,7 @@ def test_db_session():
 
 @pytest.fixture()
 def client():
-    """
-    When using the 'client' fixture in test cases, we'll get full database
-    rollbacks between test cases:
-    """
+    """ When using the 'client' fixture in test cases, we'll get full database rollbacks between test cases."""
     with TestClient(api) as client:
         yield client
 

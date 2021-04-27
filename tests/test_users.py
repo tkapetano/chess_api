@@ -1,27 +1,26 @@
 import pytest
-
+# pytest.fixture imports
 from tests.test_helpers import client, get_test_db, create_test_database, URL, test_db_session as db
 
-class TestApps:
+from sql_app.models import User
+
+
+class TestUsers:
     def setup(self):
-        self.application_url = "/applications"
+        self.users_url = "/users"
 
     @pytest.fixture(autouse=True)
     def setup_db_data(self, db):
         """Set up all the data before each test"""
-        new_app = AppModel(**APP)
-        db.add(new_app)
+        first_user = User(id=0, email="helloworld@testapi.com", hashed_password="password123")
+        db.add(first_user)
         db.commit()
-        db.refresh(new_app)
-
-    def test_404(self, client, db):
-        response = client.get("/applications")
-        assert response.status_code == 200
+        db.refresh(first_user)
 
     def test_create_and_read_user(self, client):
         email = "kasparov@testthis.api"
         response = client.post(
-            "/users/",
+            self.users_url + "/",
             json={"email": email, "password": "ilovechess123"},
         )
         assert response.status_code == 200, response.text
@@ -30,7 +29,7 @@ class TestApps:
         assert "id" in data
         user_id = data["id"]
 
-        response = client.get(f"/users/{user_id}")
+        response = client.get(f"{self.users_url}/{user_id}")
         assert response.status_code == 200, response.text
         assert response.json() == {
             "email": email,
@@ -40,6 +39,6 @@ class TestApps:
         }
 
     def test_read_non_exisiting_user(self, client):
-        response = client.get("/users/99999")
+        response = client.get(f"{self.users_url}/99999")
         assert response.status_code == 404
         assert response.json() == {"detail": "User not found"}
