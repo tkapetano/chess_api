@@ -17,6 +17,21 @@ class TestUsers:
         db.commit()
         db.refresh(first_user)
 
+    def test_read_existing_user(self, client):
+        response = client.get(f"{self.users_url}/0")
+        assert response.status_code == 200, response.text
+        assert response.json() == {
+            "email": "helloworld@testapi.com",
+            "id": 0,
+            "is_active": True,
+            "games": []
+        }
+
+    def test_read_non_existing_user(self, client):
+        response = client.get(f"{self.users_url}/99999")
+        assert response.status_code == 404
+        assert response.json() == {"detail": "User not found"}
+
     def test_create_and_read_user(self, client):
         email = "kasparov@testthis.api"
         response = client.post(
@@ -38,7 +53,3 @@ class TestUsers:
             "games": []
         }
 
-    def test_read_non_exisiting_user(self, client):
-        response = client.get(f"{self.users_url}/99999")
-        assert response.status_code == 404
-        assert response.json() == {"detail": "User not found"}

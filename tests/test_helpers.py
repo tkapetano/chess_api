@@ -44,7 +44,6 @@ def create_test_database():
     Base.metadata.create_all(ENGINE)  # Create the tables.
     api.dependency_overrides[get_db] = get_test_db  # Mock the Database Dependency
     yield  # Run the tests.
-    drop_database(URL)  # Drop the test database.
 
 
 @pytest.yield_fixture
