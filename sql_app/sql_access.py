@@ -51,17 +51,26 @@ def read_games(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 
 @router.get("/users/{user_id}/games/", response_model=List[schemas.Game])
 def read_games_for_user(user_id: int, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return crud.get_games(db, owner_id=user_id, skip=skip, limit=limit)
+    games = crud.get_games(db, owner_id=user_id, skip=skip, limit=limit)
+    if games is None:
+        raise HTTPException(status_code=404, detail="No Games for this user found or user not found")
+    return games
 
 
 @router.post("/users/{user_id}/games/", response_model=schemas.Game)
 def create_new_game_for_user(user_id: int, game: schemas.GameCreate, db: Session = Depends(get_db)):
+    db_user = crud.get_user(db, user_id=user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
     return crud.create_user_game(db=db, game=game, user_id=user_id)
 
 
 @router.get("/users/{user_id}/{game_id}/", response_model=schemas.Game)
 def read_games_for_user(user_id: int, game_id: int, db: Session = Depends(get_db)):
-    return crud.get_games(db, owner_id=user_id, game_id=game_id)
+    games = crud.get_games(db, owner_id=user_id, game_id=game_id)
+    if games is None:
+        raise HTTPException(status_code=404, detail=f"Game with id {game_id} not found")
+    return games
 
 
 @router.post("/users/{user_id}/{game_id}/move", response_model=schemas.Turn)

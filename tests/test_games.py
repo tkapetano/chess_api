@@ -40,7 +40,6 @@ class TestGames:
         game_id = data["id"]
 
         response = client.get(f"/users/{user_id}/games/")
-        #response = client.get(f"/users/{user_id}/{game_id}/",)
         assert response.status_code == 200, response.text
         data = response.json()
         assert isinstance(data, list)
@@ -49,7 +48,21 @@ class TestGames:
         assert game["id"] == game_id
         assert game["owner_id"] == user_id
 
-        response = client.get(f"/users/{user_id}/{game_id}/",)
+        response = client.get(f"/users/{user_id}/{game_id}/")
         assert response.status_code == 200, response.text
         game_same_query = response.json()
         assert game_same_query == game
+
+    def test_create_game_for_non_existing_user(self, client):
+        response = client.post(
+            f"/users/99999/games/",
+            json={"title": "testGames"},
+        )
+        assert response.status_code == 404
+        assert response.json() == {"detail": "User not found"}
+
+    def test_read_non_existing_game(self, client):
+        game_id = 99999
+        response = client.get(f"/users/42/{game_id}/")
+        assert response.status_code == 404
+        assert response.json() == {"detail": f"Game with id {game_id} not found"}
