@@ -59,6 +59,11 @@ def create_new_game_for_user(user_id: int, game: schemas.GameCreate, db: Session
     return crud.create_user_game(db=db, game=game, user_id=user_id)
 
 
+@router.get("/users/{user_id}/{game_id}/", response_model=schemas.Game)
+def read_games_for_user(user_id: int, game_id: int, db: Session = Depends(get_db)):
+    return crud.get_games(db, owner_id=user_id, game_id=game_id)
+
+
 @router.post("/users/{user_id}/{game_id}/move", response_model=schemas.Turn)
 def create_register_new_move_for_game(
         game_id: int, move: Move = Depends(), db: Session = Depends(get_db)):

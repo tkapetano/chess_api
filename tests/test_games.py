@@ -48,3 +48,8 @@ class TestGames:
         game = data[1]
         assert game["id"] == game_id
         assert game["owner_id"] == user_id
+
+        response = client.get(f"/users/{user_id}/{game_id}/",)
+        assert response.status_code == 200, response.text
+        game_same_query = response.json()
+        assert game_same_query == game

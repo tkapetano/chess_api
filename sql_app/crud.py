@@ -25,8 +25,11 @@ def create_user(db: Session, user: schemas.UserCreate):
     return db_user
 
 
-def get_games(db: Session, owner_id: Optional[int] = None, skip: int = 0, limit: int = 100):
+def get_games(db: Session, owner_id: Optional[int] = None, game_id: Optional[int] = None,
+              skip: int = 0, limit: int = 100):
     if owner_id:
+        if game_id:
+            return db.query(models.Game).filter(models.Game.owner_id == owner_id, models.Game.id == game_id).first()
         return db.query(models.Game).filter(models.Game.owner_id == owner_id).offset(skip).limit(limit).all()
     return db.query(models.Game).offset(skip).limit(limit).all()
 
