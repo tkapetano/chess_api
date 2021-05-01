@@ -44,17 +44,19 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
     return db_user
 
 
-@router.post("/users/{user_id}/games/", response_model=schemas.Game)
-def create_new_game_for_user(
-        user_id: int, game: schemas.GameCreate, db: Session = Depends(get_db)
-):
-    return crud.create_user_game(db=db, game=game, user_id=user_id)
-
-
 @router.get("/games/", response_model=List[schemas.Game])
 def read_games(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    games = crud.get_games(db, skip=skip, limit=limit)
-    return games
+    return crud.get_games(db, skip=skip, limit=limit)
+
+
+@router.get("/users/{user_id}/games/", response_model=List[schemas.Game])
+def read_games_for_user(user_id: int, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    return crud.get_games(db, owner_id=user_id, skip=skip, limit=limit)
+
+
+@router.post("/users/{user_id}/games/", response_model=schemas.Game)
+def create_new_game_for_user(user_id: int, game: schemas.GameCreate, db: Session = Depends(get_db)):
+    return crud.create_user_game(db=db, game=game, user_id=user_id)
 
 
 @router.post("/users/{user_id}/{game_id}/move", response_model=schemas.Turn)

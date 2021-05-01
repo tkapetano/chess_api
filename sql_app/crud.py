@@ -1,3 +1,5 @@
+from typing import Optional
+
 from sqlalchemy.orm import Session
 from sql_app import models, schemas
 
@@ -23,7 +25,9 @@ def create_user(db: Session, user: schemas.UserCreate):
     return db_user
 
 
-def get_games(db: Session, skip: int = 0, limit: int = 100):
+def get_games(db: Session, owner_id: Optional[int] = None, skip: int = 0, limit: int = 100):
+    if owner_id:
+        return db.query(models.Game).filter(models.Game.owner_id == owner_id).offset(skip).limit(limit).all()
     return db.query(models.Game).offset(skip).limit(limit).all()
 
 

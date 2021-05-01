@@ -26,3 +26,25 @@ class TestGames:
         first_game = data[0]
         assert first_game["id"] == 0
         assert first_game["owner_id"] == 42
+
+    def test_create_and_read_game(self, client):
+        user_id = 42
+        response = client.post(
+            f"/users/{user_id}/games/",
+            json={"title": "testGames"},
+        )
+        assert response.status_code == 200, response.text
+        data = response.json()
+        assert data["owner_id"] == user_id
+        assert "id" in data
+        game_id = data["id"]
+
+        response = client.get(f"/users/{user_id}/games/")
+        #response = client.get(f"/users/{user_id}/{game_id}/",)
+        assert response.status_code == 200, response.text
+        data = response.json()
+        assert isinstance(data, list)
+        assert len(data) == 2
+        game = data[1]
+        assert game["id"] == game_id
+        assert game["owner_id"] == user_id

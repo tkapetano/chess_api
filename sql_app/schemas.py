@@ -23,7 +23,6 @@ class Turn(TurnBase):
 
 class GameBase(BaseModel):
     title: str
-    description: Optional[str] = None
 
 
 class GameCreate(GameBase):
